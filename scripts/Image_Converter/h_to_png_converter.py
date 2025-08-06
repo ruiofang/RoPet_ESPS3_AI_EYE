@@ -50,24 +50,49 @@ class HToPNGConverterApp:
         print()
 
     def load_common_definitions(self):
-        """从common.h文件加载尺寸定义"""
-        # 尝试多个可能的common.h路径
+        """从用户目录下的common.h文件加载尺寸定义，如果找不到则使用默认值"""
+        # 优先搜索用户工作目录和项目目录下的common.h文件
+        possible_paths = []
+        
+        # 1. 首先搜索当前工作目录及其子目录
+        current_dir = os.getcwd()
+        if os.path.exists(current_dir):
+            for root, dirs, files in os.walk(current_dir):
+                for file in files:
+                    if file == "common.h":
+                        possible_paths.append(os.path.join(root, file))
+        
+        # 2. 搜索项目根目录下的main/eye_data目录
         base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../main/eye_data")
-        
-        possible_paths = [
-            os.path.join(base_dir, "240_240/common.h"),
-            os.path.join(base_dir, "160_160/common.h"),
-            os.path.join(base_dir, "common.h"),
-        ]
-        
-        # 也可以搜索所有子目录中的common.h
         if os.path.exists(base_dir):
+            # 添加常见路径
+            common_paths = [
+                os.path.join(base_dir, "240_240/common.h"),
+                os.path.join(base_dir, "160_160/common.h"),
+                os.path.join(base_dir, "common.h"),
+            ]
+            for path in common_paths:
+                if path not in possible_paths:
+                    possible_paths.append(path)
+            
+            # 搜索所有子目录中的common.h
             for root, dirs, files in os.walk(base_dir):
                 for file in files:
                     if file == "common.h":
                         potential_path = os.path.join(root, file)
                         if potential_path not in possible_paths:
                             possible_paths.append(potential_path)
+        
+        # 3. 搜索用户主目录下的常见位置（如果有输入目录设置的话）
+        if hasattr(self, 'input_dir') and self.input_dir.get():
+            input_directory = self.input_dir.get()
+            if os.path.exists(input_directory):
+                for root, dirs, files in os.walk(input_directory):
+                    for file in files:
+                        if file == "common.h":
+                            potential_path = os.path.join(root, file)
+                            if potential_path not in possible_paths:
+                                possible_paths.append(potential_path)
         
         # 初始化标记
         self.common_h_loaded = False
@@ -98,23 +123,26 @@ class HToPNGConverterApp:
                         self.common_h_loaded = True
                         self.loaded_common_h_path = common_h_path
                         
-                        print(f"从 {common_h_path} 加载尺寸定义:")
+                        print(f"✓ 从用户目录找到common.h定义: {os.path.relpath(common_h_path)}")
                         for name, value in loaded_definitions.items():
                             print(f"  {name}: {value}")
-                        print(f"common.h定义加载成功，将优先使用common.h中的尺寸定义")
+                        print("将优先使用common.h中的尺寸定义，未找到的定义将使用默认值")
                         print()
                         return  # 找到有效定义后立即返回
                         
                 except Exception as e:
-                    print(f"尝试加载 {common_h_path} 失败: {e}")
+                    print(f"尝试加载 {os.path.relpath(common_h_path)} 失败: {e}")
                     continue
         
-        # 如果没有找到任何有效的common.h文件
-        print("未找到有效的common.h文件或定义")
-        print("搜索路径:")
-        for path in possible_paths:
-            print(f"  {path} - {'存在' if os.path.exists(path) else '不存在'}")
-        print("将使用默认尺寸定义")
+        # 如果没有找到任何有效的common.h文件，使用默认值
+        print("未在用户目录中找到有效的common.h文件，使用默认尺寸定义")
+        print("搜索的路径包括:")
+        print("  1. 当前工作目录及其子目录")
+        print("  2. 项目main/eye_data目录及其子目录")  
+        print("  3. 输入目录及其子目录（如果已设置）")
+        print(f"默认尺寸定义:")
+        for name, value in self.size_definitions.items():
+            print(f"  {name}: {value}")
         print()
 
     def create_widgets(self):
@@ -329,20 +357,29 @@ class HToPNGConverterApp:
 • 选择包含H文件的输入目录
 • 工具会自动遍历所有子目录中的H文件
 • 输出图片按头文件名称建立文件夹分类
-• 每个头文件的所有数组都会转换为PNG图片
+• 每个头文件的所有数组都会转换为PNG图片，按数组名称命名
 
-自动尺寸检测规则：
-• 工具会首先尝试从common.h文件加载尺寸定义
-• 如果common.h存在且包含有效定义，将优先使用其定义
-• 如果common.h不存在或无效，将使用以下默认尺寸：
+智能尺寸检测：
+• 工具会自动搜索用户目录下的common.h文件获取尺寸定义
+• common.h搜索顺序：
+  1. 当前工作目录及其所有子目录
+  2. 项目main/eye_data目录及其子目录
+  3. 用户选择的输入目录及其子目录
+• 如果找到valid common.h文件，优先使用其中的尺寸定义
+• 如果找不到或无有效定义，使用以下默认尺寸：
   - 虹膜贴图：314×50（15700像素）
   - 巩膜：250×250（62500像素）  
   - 屏幕/完整眼部：160×160（25600像素）
   - 虹膜：100×100（10000像素）
 
 支持的数组格式：
-• const uint16_t array_name[] = { 0x1234, 0x5678, ... };
-• 自动识别数组名称作为输出文件名
+• const uint16_t array_name[] = { 0x1234, 0x5678, ... }; (RGB565彩色数据)
+• uint16_t array_name[] = { 0x1234, 0x5678, ... }; (RGB565彩色数据)
+• static const uint16_t array_name[] = { 0x1234, 0x5678, ... }; (RGB565彩色数据)
+• const uint8_t array_name[] = { 0x00, 0x01, 255, ... }; (8位灰度数据)
+• uint8_t array_name[] = { 0x00, 0x01, 255, ... }; (8位灰度数据)
+• static const uint8_t array_name[] = { 0x00, 0x01, 255, ... }; (8位灰度数据)
+• 自动识别数组名称作为PNG文件名，数据类型决定输出格式
 
 使用方法：
 1. 选择包含H文件的输入目录
@@ -353,13 +390,16 @@ class HToPNGConverterApp:
 
 输出结构：
 输出目录/
-├── 头文件1/
-│   ├── 数组1.png
-│   ├── 数组2.png
+├── 头文件名1/
+│   ├── 数组名1.png
+│   ├── 数组名2.png
 │   └── ...
-├── 头文件2/
-│   ├── 数组1.png
+├── 头文件名2/
+│   ├── 数组名1.png
 │   └── ...
+└── ...
+
+文件类型识别优先级：
 └── ...
 
 文件类型识别优先级：
@@ -370,6 +410,12 @@ class HToPNGConverterApp:
    • 包含"iris"的数组 → 虹膜尺寸
 3. 如果无法匹配，尝试推算为正方形或常见比例的矩形
 4. 最后使用默认尺寸（common.h定义或固定默认值）
+
+特性说明：
+• 支持从用户目录自动搜索common.h文件获取尺寸定义
+• 图片按头文件名分文件夹存储，便于管理
+• 图片按数组名命名，便于识别
+• 智能尺寸检测，减少手工配置需求
 """
         messagebox.showinfo("帮助", help_text)
 
@@ -448,6 +494,10 @@ class HToPNGConverterApp:
 
         os.makedirs(output_directory, exist_ok=True)
         
+        # 在转换前重新加载common.h定义，以便包含新设置的输入目录
+        print("重新搜索common.h文件...")
+        self.load_common_definitions()
+        
         # 收集所有H文件
         h_files = []
         for root, dirs, files in os.walk(input_directory):
@@ -471,28 +521,42 @@ class HToPNGConverterApp:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # 查找所有数组定义
+        # 查找所有数组定义，包括uint16_t和uint8_t类型
         patterns = [
-            r'const\s+uint16_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}',
-            r'uint16_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}',
-            r'static\s+const\s+uint16_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}',
-            r'const\s+unsigned\s+short\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}'
+            # uint16_t 数组模式
+            (r'const\s+uint16_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint16_t'),
+            (r'uint16_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint16_t'),
+            (r'static\s+const\s+uint16_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint16_t'),
+            (r'const\s+unsigned\s+short\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint16_t'),
+            
+            # uint8_t 数组模式
+            (r'const\s+uint8_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint8_t'),
+            (r'uint8_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint8_t'),
+            (r'static\s+const\s+uint8_t\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint8_t'),
+            (r'const\s+unsigned\s+char\s+(\w+)\s*\[.*?\]\s*=\s*\{([^}]+)\}', 'uint8_t')
         ]
         
         arrays = []
-        for pattern in patterns:
+        for pattern, data_type in patterns:
             matches = re.finditer(pattern, content, re.DOTALL)
             for match in matches:
                 array_name = match.group(1)
                 array_content = match.group(2)
 
-                # 提取十六进制数值
+                # 提取数值 - 支持十六进制和十进制
                 hex_values = re.findall(r'0x[0-9A-Fa-f]+', array_content)
+                dec_values = re.findall(r'\b(?!0x)\d+\b', array_content)
                 
+                values = []
                 if hex_values:
-                    # 转换为整数
+                    # 优先处理十六进制值
                     values = [int(val, 16) for val in hex_values]
-                    arrays.append((array_name, values))
+                elif dec_values:
+                    # 处理十进制值
+                    values = [int(val, 10) for val in dec_values]
+                
+                if values:
+                    arrays.append((array_name, values, data_type))
         
         return arrays
 
@@ -536,10 +600,18 @@ class HToPNGConverterApp:
                 file_success_count = 0
                 
                 # 转换每个数组
-                for array_name, values in arrays:
+                for array_info in arrays:
+                    # 解包数组信息（兼容新旧格式）
+                    if len(array_info) == 3:
+                        array_name, values, data_type = array_info
+                    else:
+                        # 兼容旧格式（假设是uint16_t）
+                        array_name, values = array_info
+                        data_type = 'uint16_t'
+                    
                     try:
                         total_arrays += 1
-                        print(f"    转换数组: {array_name} (包含 {len(values)} 个数值)")
+                        print(f"    转换数组: {array_name} ({data_type}, {len(values)} 个数值)")
                         
                         # 检测图像尺寸
                         if self.auto_detect_size.get():
@@ -562,7 +634,7 @@ class HToPNGConverterApp:
                                 values.extend([0] * (expected_size - len(values)))
                         
                         # 创建图像
-                        img = self.create_image_from_data(values, width, height)
+                        img = self.create_image_from_data(values, width, height, data_type)
                         
                         # 保存图像
                         output_filename = f"{array_name}.png"
@@ -606,45 +678,53 @@ class HToPNGConverterApp:
             f"转换数组: {success_arrays}/{total_arrays}\n"
             f"输出目录: {output_directory}")
 
-    def create_image_from_data(self, values, width, height):
+    def create_image_from_data(self, values, width, height, data_type='uint16_t'):
         """根据数据创建图像"""
         color_format = self.color_format.get()
         
-        if color_format == "RGB565":
-            # 转换RGB565到RGB888
-            rgb_data = []
-            for val in values:
-                r, g, b = self.rgb565_to_rgb888(val)
-                rgb_data.extend([r, g, b])
+        # 对于uint8_t数组，通常是灰度图像数据
+        if data_type == 'uint8_t':
+            # 创建灰度图像
+            img_array = np.array(values, dtype=np.uint8).reshape(height, width)
+            img = Image.fromarray(img_array, 'L')
             
-            # 创建图像
-            img_array = np.array(rgb_data, dtype=np.uint8).reshape(height, width, 3)
-            img = Image.fromarray(img_array, 'RGB')
-            
-        elif color_format == "RGB888":
-            # 假设每个值包含RGB888数据
-            rgb_data = []
-            for val in values:
-                r = (val >> 16) & 0xFF
-                g = (val >> 8) & 0xFF
-                b = val & 0xFF
-                rgb_data.extend([r, g, b])
-            
-            img_array = np.array(rgb_data, dtype=np.uint8).reshape(height, width, 3)
-            img = Image.fromarray(img_array, 'RGB')
-            
-        elif color_format == "ARGB8888":
-            # 假设每个值包含ARGB8888数据
-            rgba_data = []
-            for val in values:
-                a = (val >> 24) & 0xFF
-                r = (val >> 16) & 0xFF
-                g = (val >> 8) & 0xFF
-                b = val & 0xFF
-                rgba_data.extend([r, g, b, a])
-            
-            img_array = np.array(rgba_data, dtype=np.uint8).reshape(height, width, 4)
-            img = Image.fromarray(img_array, 'RGBA')
+        elif data_type == 'uint16_t':
+            # 对于uint16_t数组，按照现有逻辑处理
+            if color_format == "RGB565":
+                # 转换RGB565到RGB888
+                rgb_data = []
+                for val in values:
+                    r, g, b = self.rgb565_to_rgb888(val)
+                    rgb_data.extend([r, g, b])
+                
+                # 创建图像
+                img_array = np.array(rgb_data, dtype=np.uint8).reshape(height, width, 3)
+                img = Image.fromarray(img_array, 'RGB')
+                
+            elif color_format == "RGB888":
+                # 假设每个值包含RGB888数据
+                rgb_data = []
+                for val in values:
+                    r = (val >> 16) & 0xFF
+                    g = (val >> 8) & 0xFF
+                    b = val & 0xFF
+                    rgb_data.extend([r, g, b])
+                
+                img_array = np.array(rgb_data, dtype=np.uint8).reshape(height, width, 3)
+                img = Image.fromarray(img_array, 'RGB')
+                
+            elif color_format == "ARGB8888":
+                # 假设每个值包含ARGB8888数据
+                rgba_data = []
+                for val in values:
+                    a = (val >> 24) & 0xFF
+                    r = (val >> 16) & 0xFF
+                    g = (val >> 8) & 0xFF
+                    b = val & 0xFF
+                    rgba_data.extend([r, g, b, a])
+                
+                img_array = np.array(rgba_data, dtype=np.uint8).reshape(height, width, 4)
+                img = Image.fromarray(img_array, 'RGBA')
         
         return img
 

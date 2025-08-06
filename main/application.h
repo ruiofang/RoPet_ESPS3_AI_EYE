@@ -291,7 +291,6 @@ private:
         int32_t  duration,   // 动画持续时间（微秒）
         int16_t  range
     );
-    void SetEyeStyle(uint8_t style);
    
 #endif
 };

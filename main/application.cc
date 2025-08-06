@@ -88,7 +88,7 @@ Application::Application() {
 
 #if CONFIG_USE_EYE_STYLE_ES8311 || CONFIG_USE_EYE_STYLE_VB6824
      is_blink = true;         // 启用眨眼动画
-     is_track = false;        // 禁用眼球跟踪（这样不会出现眼睑跟踪）
+     is_track = true;        // 禁用眼球跟踪（这样不会出现眼睑跟踪）
      eyeNewX = 512;           // 眼球目标X坐标(中心位置)
      eyeNewY = 512;           // 眼球目标Y坐标(中心位置)  
      oldIris = (IRIS_MIN + IRIS_MAX) / 2;
@@ -96,12 +96,12 @@ Application::Application() {
      startTime = 0;
      timeOfLastBlink = 0;
      timeToNextBlink = 0;
-     sclera = sclera_default;
      upper = upper_default;
      lower = lower_default;
      polar = polar_default;
-     iris = iris_default;
-     SetEyeStyle(1);
+    //  iris = iris_default;
+    //  sclera = sclera_default;
+     eye_style(7);  // 默认眼睛样式
 #endif
 
     esp_timer_create_args_t clock_timer_args = {
@@ -1643,6 +1643,7 @@ void Application::ShowOtaInfo(const std::string& code,const std::string& ip) {
     {
         // is_track = rand() % 2;
         //is_track = false;
+        eye_style_num = eye_style;
         switch (eye_style)
         {
         case 1:
@@ -1698,9 +1699,5 @@ void Application::EyeLoop() {
     }
 }
 
-void Application::SetEyeStyle(uint8_t style) {
-    eye_style_num = style;
-    eye_style(style);
-}
 
 #endif
