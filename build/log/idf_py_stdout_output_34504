@@ -1,0 +1,38 @@
+[1/5] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\Desktop\RoPet_ESPS3_AI_EYE\build\esp-idf\esptool_py && d:\Espressif\ESP-IDF_5.4.2\Espressif\tools\python_env\idf5.4_py3.11_env\Scripts\python.exe C:/Users/RUIO/esp/v5.4.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/partition_table/partition-table.bin C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/xiaozhi.bin"
+xiaozhi.bin binary size 0x25f9e0 bytes. Smallest app partition is 0x600000 bytes. 0x3a0620 bytes (60%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\Desktop\RoPet_ESPS3_AI_EYE\build\bootloader\esp-idf\esptool_py && d:\Espressif\ESP-IDF_5.4.2\Espressif\tools\python_env\idf5.4_py3.11_env\Scripts\python.exe C:/Users/RUIO/esp/v5.4.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/bootloader/bootloader.bin"
+Bootloader binary size 0x4030 bytes. 0x3fd0 bytes (50%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\esp\v5.4.2\esp-idf\components\esptool_py && D:\Espressif\ESP-IDF_5.4.2\Espressif\tools\tools\cmake\3.30.2\bin\cmake.exe -D IDF_PATH=C:/Users/RUIO/esp/v5.4.2/esp-idf -D SERIAL_TOOL=d:/Espressif/ESP-IDF_5.4.2/Espressif/tools/python_env/idf5.4_py3.11_env/Scripts/python.exe;;C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build -P C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/run_serial_tool.cmake"
+esptool.py --chip esp32s3 -p COM10 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x100000 xiaozhi.bin 0x8000 partition_table/partition-table.bin 0xd000 ota_data_initial.bin 0x10000 srmodels/srmodels.bin
+esptool.py v4.9.0
+Serial port COM10
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 10:20:ba:41:c8:fc
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00004fff...
+Flash will be erased from 0x00100000 to 0x0035ffff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000d000 to 0x0000efff...
+Flash will be erased from 0x00010000 to 0x00057fff...
+SHA digest in image updated
+Compressed 16432 bytes to 11396...
+Writing at 0x00000000... (100 %)
+
+A serial exception error occurred: Cannot configure port, something went wrong. Original message: PermissionError(13, '设备不识别此命令。', None, 22)
+Note: This error originates from pySerial. It is likely not a problem with esptool, but with the hardware connection or drivers.
+For troubleshooting steps visit: https://docs.espressif.com/projects/esptool/en/latest/troubleshooting.html
+FAILED: CMakeFiles/flash C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/CMakeFiles/flash 
+C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\esp\v5.4.2\esp-idf\components\esptool_py && D:\Espressif\ESP-IDF_5.4.2\Espressif\tools\tools\cmake\3.30.2\bin\cmake.exe -D IDF_PATH=C:/Users/RUIO/esp/v5.4.2/esp-idf -D SERIAL_TOOL=d:/Espressif/ESP-IDF_5.4.2/Espressif/tools/python_env/idf5.4_py3.11_env/Scripts/python.exe;;C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build -P C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/run_serial_tool.cmake"
+ninja: build stopped: subcommand failed.

@@ -1,0 +1,20 @@
+[1/5] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\Desktop\RoPet_ESPS3_AI_EYE\build\esp-idf\esptool_py && d:\Espressif\ESP-IDF_5.4.2\Espressif\tools\python_env\idf5.4_py3.11_env\Scripts\python.exe C:/Users/RUIO/esp/v5.4.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/partition_table/partition-table.bin C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/xiaozhi.bin"
+xiaozhi.bin binary size 0x25f9e0 bytes. Smallest app partition is 0x600000 bytes. 0x3a0620 bytes (60%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\Desktop\RoPet_ESPS3_AI_EYE\build\bootloader\esp-idf\esptool_py && d:\Espressif\ESP-IDF_5.4.2\Espressif\tools\python_env\idf5.4_py3.11_env\Scripts\python.exe C:/Users/RUIO/esp/v5.4.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/bootloader/bootloader.bin"
+Bootloader binary size 0x4030 bytes. 0x3fd0 bytes (50%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\esp\v5.4.2\esp-idf\components\esptool_py && D:\Espressif\ESP-IDF_5.4.2\Espressif\tools\tools\cmake\3.30.2\bin\cmake.exe -D IDF_PATH=C:/Users/RUIO/esp/v5.4.2/esp-idf -D SERIAL_TOOL=d:/Espressif/ESP-IDF_5.4.2/Espressif/tools/python_env/idf5.4_py3.11_env/Scripts/python.exe;;C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build -P C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/run_serial_tool.cmake"
+esptool.py --chip esp32s3 -p COM10 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x100000 xiaozhi.bin 0x8000 partition_table/partition-table.bin 0xd000 ota_data_initial.bin 0x10000 srmodels/srmodels.bin
+esptool.py v4.9.0
+Serial port COM10
+
+A fatal error occurred: Could not open COM10, the port is busy or doesn't exist.
+(could not open port 'COM10': FileNotFoundError(2, '系统找不到指定的文件。', None, 2))
+
+Hint: Check if the port is correct and ESP connected
+
+FAILED: CMakeFiles/flash C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/CMakeFiles/flash 
+C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\esp\v5.4.2\esp-idf\components\esptool_py && D:\Espressif\ESP-IDF_5.4.2\Espressif\tools\tools\cmake\3.30.2\bin\cmake.exe -D IDF_PATH=C:/Users/RUIO/esp/v5.4.2/esp-idf -D SERIAL_TOOL=d:/Espressif/ESP-IDF_5.4.2/Espressif/tools/python_env/idf5.4_py3.11_env/Scripts/python.exe;;C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build -P C:/Users/RUIO/esp/v5.4.2/esp-idf/components/esptool_py/run_serial_tool.cmake"
+ninja: build stopped: subcommand failed.

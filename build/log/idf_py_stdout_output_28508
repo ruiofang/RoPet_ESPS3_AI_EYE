@@ -1,0 +1,42 @@
+[1/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/boards/common/power_save_timer.cc.obj
+[2/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/audio_codecs/vb6824_audio_codec.cc.obj
+[3/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/protocols/mqtt_protocol.cc.obj
+[4/26] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\Desktop\RoPet_ESPS3_AI_EYE\build\bootloader\esp-idf\esptool_py && d:\Espressif\ESP-IDF_5.4.2\Espressif\tools\python_env\idf5.4_py3.11_env\Scripts\python.exe C:/Users/RUIO/esp/v5.4.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/bootloader/bootloader.bin"
+Bootloader binary size 0x4030 bytes. 0x3fd0 bytes (50%) free.
+[5/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/led/circular_strip.cc.obj
+[6/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/led/single_led.cc.obj
+[7/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/led/gpio_led.cc.obj
+[8/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/boards/common/dual_network_board.cc.obj
+[9/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/boards/common/touch_button.cc.obj
+C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/main/boards/common/touch_button.cc: In static member function 'static void TouchButton::handleButtonEvent(touch_button_handle_t, touch_button_message_t*, void*)':
+C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/main/boards/common/touch_button.cc:73:11: warning: unused variable 'app' [-Wunused-variable]
+   73 |     auto& app = Application::GetInstance();
+      |           ^~~
+[10/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/display/lcd_display.cc.obj
+C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/main/display/lcd_display.cc: In member function 'virtual void LcdDisplay::SetEye(int, int, int, int, const void*)':
+C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/main/display/lcd_display.cc:1019:19: warning: unused variable 'ret' [-Wunused-variable]
+ 1019 |         esp_err_t ret = esp_lcd_panel_draw_bitmap(panel_, x_start, y_start, x_end, y_end, color_data);
+      |                   ^~~
+[11/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/main.cc.obj
+[12/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/iot/thing.cc.obj
+[13/26] No install step for 'bootloader'
+[14/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/protocols/websocket_protocol.cc.obj
+[15/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/boards/common/ml307_board.cc.obj
+[16/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/mcp_server.cc.obj
+[17/26] Completed 'bootloader'
+[18/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/display/display.cc.obj
+[19/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/application.cc.obj
+[20/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/boards/doit-esp32s3-eye-6824/doit-esp32s3-eye-6824.cc.obj
+[21/26] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/boards/common/wifi_board.cc.obj
+[22/26] Linking C static library esp-idf\main\libmain.a
+[23/26] Generating ld/sections.ld
+[24/26] Linking CXX executable xiaozhi.elf
+[25/26] Generating binary image from built executable
+esptool.py v4.9.0
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/xiaozhi.bin
+[26/26] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\RUIO\Desktop\RoPet_ESPS3_AI_EYE\build\esp-idf\esptool_py && d:\Espressif\ESP-IDF_5.4.2\Espressif\tools\python_env\idf5.4_py3.11_env\Scripts\python.exe C:/Users/RUIO/esp/v5.4.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/partition_table/partition-table.bin C:/Users/RUIO/Desktop/RoPet_ESPS3_AI_EYE/build/xiaozhi.bin"
+xiaozhi.bin binary size 0x3263e0 bytes. Smallest app partition is 0x600000 bytes. 0x2d9c20 bytes (48%) free.

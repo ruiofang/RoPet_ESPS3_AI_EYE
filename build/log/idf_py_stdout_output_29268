@@ -1,0 +1,8 @@
+-- ccache will be used for faster recompilation
+-- Building ESP-IDF components for target esp32s3
+NOTICE: Skipping optional dependency: waveshare/esp_lcd_jd9365_10_1
+NOTICE: Skipping optional dependency: waveshare/esp_lcd_st7703
+NOTICE: Skipping optional dependency: espressif/esp_lcd_ili9881c
+NOTICE: Skipping optional dependency: espressif/esp_wifi_remote
+NOTICE: Skipping optional dependency: lijunru-hub/servo_dog_ctrl
+-- Configuring incomplete, errors occurred!
