@@ -21,7 +21,7 @@ class HToPNGConverterApp:
         # 文件路径列表（保留以兼容旧代码）
         self.file_paths = []
         
-        # 尺寸定义
+        # 尺寸定义 - 支持多种分辨率
         self.size_definitions = {
             'IRIS_MAP_WIDTH': 314,
             'IRIS_MAP_HEIGHT': 50,
@@ -31,6 +31,18 @@ class HToPNGConverterApp:
             'SCREEN_HEIGHT': 160,
             'IRIS_WIDTH': 100,
             'IRIS_HEIGHT': 100
+        }
+        
+        # 240×240版本的尺寸定义
+        self.size_definitions_240 = {
+            'IRIS_MAP_WIDTH': 471,
+            'IRIS_MAP_HEIGHT': 75,
+            'SCLERA_WIDTH': 375,
+            'SCLERA_HEIGHT': 375,
+            'SCREEN_WIDTH': 240,
+            'SCREEN_HEIGHT': 240,
+            'IRIS_WIDTH': 150,
+            'IRIS_HEIGHT': 150
         }
         
         # 创建UI组件
@@ -218,13 +230,22 @@ class HToPNGConverterApp:
             else:
                 source_info += "common.h文件定义\n"
         else:
-            source_info += "默认定义\n"
+            source_info += "默认定义（支持160×160和240×240）\n"
         
         info_text = source_info
-        info_text += f"虹膜贴图: {self.size_definitions['IRIS_MAP_WIDTH']}×{self.size_definitions['IRIS_MAP_HEIGHT']}  "
+        
+        # 显示160×160版本信息
+        info_text += f"【160×160版本】虹膜贴图: {self.size_definitions['IRIS_MAP_WIDTH']}×{self.size_definitions['IRIS_MAP_HEIGHT']}  "
         info_text += f"巩膜: {self.size_definitions['SCLERA_WIDTH']}×{self.size_definitions['SCLERA_HEIGHT']}  "
-        info_text += f"屏幕: {self.size_definitions['SCREEN_WIDTH']}×{self.size_definitions['SCREEN_HEIGHT']}\n"
-        info_text += f"虹膜: {self.size_definitions['IRIS_WIDTH']}×{self.size_definitions['IRIS_HEIGHT']}"
+        info_text += f"屏幕: {self.size_definitions['SCREEN_WIDTH']}×{self.size_definitions['SCREEN_HEIGHT']}  "
+        info_text += f"虹膜: {self.size_definitions['IRIS_WIDTH']}×{self.size_definitions['IRIS_HEIGHT']}\n"
+        
+        # 显示240×240版本信息
+        info_text += f"【240×240版本】虹膜贴图: {self.size_definitions_240['IRIS_MAP_WIDTH']}×{self.size_definitions_240['IRIS_MAP_HEIGHT']}  "
+        info_text += f"巩膜: {self.size_definitions_240['SCLERA_WIDTH']}×{self.size_definitions_240['SCLERA_HEIGHT']}  "
+        info_text += f"屏幕: {self.size_definitions_240['SCREEN_WIDTH']}×{self.size_definitions_240['SCREEN_HEIGHT']}  "
+        info_text += f"虹膜: {self.size_definitions_240['IRIS_WIDTH']}×{self.size_definitions_240['IRIS_HEIGHT']}"
+        
         self.size_info_text.insert(1.0, info_text)
 
     def select_common_h(self):
@@ -259,6 +280,14 @@ class HToPNGConverterApp:
                 self.common_h_loaded = True
                 self.loaded_common_h_path = file_path
                 
+                # 检测是否为240×240版本并更新对应的定义
+                if 'SCREEN_WIDTH' in loaded_definitions and loaded_definitions['SCREEN_WIDTH'] == 240:
+                    print(f"检测到240×240版本的common.h文件")
+                    # 更新240×240版本的定义
+                    for name, value in loaded_definitions.items():
+                        if name in self.size_definitions_240:
+                            self.size_definitions_240[name] = value
+                
                 print(f"手动加载 {file_path} 中的尺寸定义:")
                 for name, value in loaded_definitions.items():
                     print(f"  {name}: {value}")
@@ -284,28 +313,46 @@ class HToPNGConverterApp:
         # 检查是否加载了common.h的定义
         common_h_loaded = hasattr(self, 'common_h_loaded') and self.common_h_loaded
         
-        # 定义可能的尺寸和对应的关键词
-        size_mappings = [
-            # 虹膜贴图
+        # 定义可能的尺寸和对应的关键词 - 支持多种分辨率
+        size_mappings = []
+        
+        # 添加160×160版本的尺寸定义
+        size_mappings.extend([
             (self.size_definitions['IRIS_MAP_WIDTH'] * self.size_definitions['IRIS_MAP_HEIGHT'], 
              self.size_definitions['IRIS_MAP_WIDTH'], self.size_definitions['IRIS_MAP_HEIGHT'], 
-             "虹膜贴图", ['iris_map', 'irismap']),
+             "虹膜贴图(160版)", ['iris_map', 'irismap']),
              
-            # 巩膜
             (self.size_definitions['SCLERA_WIDTH'] * self.size_definitions['SCLERA_HEIGHT'], 
              self.size_definitions['SCLERA_WIDTH'], self.size_definitions['SCLERA_HEIGHT'], 
-             "巩膜", ['sclera']),
+             "巩膜(160版)", ['sclera']),
              
-            # 屏幕/完整眼部图像
             (self.size_definitions['SCREEN_WIDTH'] * self.size_definitions['SCREEN_HEIGHT'], 
              self.size_definitions['SCREEN_WIDTH'], self.size_definitions['SCREEN_HEIGHT'], 
-             "屏幕/完整眼部", ['screen', 'eye', 'full']),
+             "屏幕/完整眼部(160版)", ['screen', 'eye', 'full']),
              
-            # 虹膜
             (self.size_definitions['IRIS_WIDTH'] * self.size_definitions['IRIS_HEIGHT'], 
              self.size_definitions['IRIS_WIDTH'], self.size_definitions['IRIS_HEIGHT'], 
-             "虹膜", ['iris'])
-        ]
+             "虹膜(160版)", ['iris'])
+        ])
+        
+        # 添加240×240版本的尺寸定义
+        size_mappings.extend([
+            (self.size_definitions_240['IRIS_MAP_WIDTH'] * self.size_definitions_240['IRIS_MAP_HEIGHT'], 
+             self.size_definitions_240['IRIS_MAP_WIDTH'], self.size_definitions_240['IRIS_MAP_HEIGHT'], 
+             "虹膜贴图(240版)", ['iris_map', 'irismap']),
+             
+            (self.size_definitions_240['SCLERA_WIDTH'] * self.size_definitions_240['SCLERA_HEIGHT'], 
+             self.size_definitions_240['SCLERA_WIDTH'], self.size_definitions_240['SCLERA_HEIGHT'], 
+             "巩膜(240版)", ['sclera']),
+             
+            (self.size_definitions_240['SCREEN_WIDTH'] * self.size_definitions_240['SCREEN_HEIGHT'], 
+             self.size_definitions_240['SCREEN_WIDTH'], self.size_definitions_240['SCREEN_HEIGHT'], 
+             "屏幕/完整眼部(240版)", ['screen', 'eye', 'full']),
+             
+            (self.size_definitions_240['IRIS_WIDTH'] * self.size_definitions_240['IRIS_HEIGHT'], 
+             self.size_definitions_240['IRIS_WIDTH'], self.size_definitions_240['IRIS_HEIGHT'], 
+             "虹膜(240版)", ['iris'])
+        ])
         
         # 如果加载了common.h定义，优先使用精确匹配
         if common_h_loaded:
@@ -326,10 +373,37 @@ class HToPNGConverterApp:
                             if any(keyword in array_name_lower for keyword in keywords):
                                 return width, height, type_name
                             break
-                # 如果没有关键词匹配，返回第一个
+                # 如果没有关键词匹配，优先选择240版本的定义（更现代）
+                for width, height, type_name in exact_matches:
+                    if "240版" in type_name:
+                        return width, height, type_name
+                # 如果都不是240版本，返回第一个
                 return exact_matches[0]
+        else:
+            # 没有加载common.h时，直接使用数据长度匹配所有可能的尺寸
+            all_matches = []
+            for expected_length, width, height, type_name, keywords in size_mappings:
+                if data_length == expected_length:
+                    all_matches.append((width, height, type_name))
+            
+            if all_matches:
+                # 根据名称关键词筛选
+                for width, height, type_name in all_matches:
+                    for _, w, h, tn, keywords in size_mappings:
+                        if w == width and h == height and tn == type_name:
+                            if any(keyword in array_name_lower for keyword in keywords):
+                                return width, height, type_name
+                            break
+                
+                # 如果没有关键词匹配，优先选择240版本
+                for width, height, type_name in all_matches:
+                    if "240版" in type_name:
+                        return width, height, type_name
+                
+                # 最后返回第一个匹配
+                return all_matches[0]
         
-        # 如果没有common.h定义或没有精确匹配，尝试推算
+        # 如果没有精确匹配，尝试推算
         sqrt_length = int(data_length ** 0.5)
         if sqrt_length * sqrt_length == data_length:
             return sqrt_length, sqrt_length, "推算正方形"
@@ -347,8 +421,11 @@ class HToPNGConverterApp:
         if common_h_loaded:
             return self.size_definitions['SCREEN_WIDTH'], self.size_definitions['SCREEN_HEIGHT'], "common.h默认尺寸"
         else:
-            # 使用固定的默认尺寸
-            return 160, 160, "固定默认尺寸"
+            # 根据数据量判断使用哪个版本的默认尺寸
+            if data_length >= 57600:  # 240×240 = 57600
+                return 240, 240, "240版默认尺寸"
+            else:
+                return 160, 160, "160版默认尺寸"
 
     def show_help(self):
         help_text = """RoPet眼部图像H文件转PNG工具
@@ -366,11 +443,19 @@ class HToPNGConverterApp:
   2. 项目main/eye_data目录及其子目录
   3. 用户选择的输入目录及其子目录
 • 如果找到valid common.h文件，优先使用其中的尺寸定义
-• 如果找不到或无有效定义，使用以下默认尺寸：
+• 支持160×160和240×240两种分辨率版本：
+
+【160×160版本默认尺寸】：
   - 虹膜贴图：314×50（15700像素）
   - 巩膜：250×250（62500像素）  
   - 屏幕/完整眼部：160×160（25600像素）
   - 虹膜：100×100（10000像素）
+
+【240×240版本默认尺寸】：
+  - 虹膜贴图：471×75（35325像素）
+  - 巩膜：375×375（140625像素）
+  - 屏幕/完整眼部：240×240（57600像素）
+  - 虹膜：150×150（22500像素）
 
 支持的数组格式：
 • const uint16_t array_name[] = { 0x1234, 0x5678, ... }; (RGB565彩色数据)
@@ -400,22 +485,23 @@ class HToPNGConverterApp:
 └── ...
 
 文件类型识别优先级：
-└── ...
-
-文件类型识别优先级：
-1. 如果加载了common.h定义，优先根据数据长度精确匹配
-2. 根据数组名称关键词识别：
+1. 如果加载了common.h定义，优先根据数据长度精确匹配对应版本
+2. 根据数据长度自动选择160×160或240×240版本的尺寸定义
+3. 根据数组名称关键词识别：
    • 包含"iris_map"的数组 → 虹膜贴图尺寸
    • 包含"sclera"的数组 → 巩膜尺寸
    • 包含"iris"的数组 → 虹膜尺寸
-3. 如果无法匹配，尝试推算为正方形或常见比例的矩形
-4. 最后使用默认尺寸（common.h定义或固定默认值）
+4. 如果无法匹配，尝试推算为正方形或常见比例的矩形
+5. 最后根据数据量使用对应版本的默认尺寸：
+   • 数据量≥57600像素 → 240×240版本默认尺寸
+   • 数据量<57600像素 → 160×160版本默认尺寸
 
 特性说明：
-• 支持从用户目录自动搜索common.h文件获取尺寸定义
+• 同时支持160×160和240×240两种分辨率的眼部图像
+• 智能识别不同版本的数据并使用相应的尺寸定义
 • 图片按头文件名分文件夹存储，便于管理
 • 图片按数组名命名，便于识别
-• 智能尺寸检测，减少手工配置需求
+• 自动优选240×240版本的定义（更现代，更清晰）
 """
         messagebox.showinfo("帮助", help_text)
 
